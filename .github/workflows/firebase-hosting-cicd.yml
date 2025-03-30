@@ -4,7 +4,7 @@ on:
   workflow_dispatch:
 
 jobs:
-  build_and_deploy:
+  test_and_build:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
@@ -15,11 +15,23 @@ jobs:
         with:
           node-version: "latest"
 
+      - name: Run tests
+        run: npm run test
+
       - name: Install dependencies and build
         run: npm ci && npm run build
 
-      - name: Run tests
-        run: npm run test
+      - name: Upload artifact
+        uses: actions/upload-artifact@v3
+        with:
+          name: dist
+          path: dist
+
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Download artifact
+        uses: actions/download-artifact@v3
 
       - name: Deploy to Firebase Hosting
         uses: FirebaseExtended/action-hosting-deploy@v0
