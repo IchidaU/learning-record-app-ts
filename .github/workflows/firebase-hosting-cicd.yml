@@ -15,11 +15,14 @@ jobs:
         with:
           node-version: "latest"
 
+      - name: Install dependencies
+        run: npm ci
+
       - name: Run tests
         run: npm run test
 
-      - name: Install dependencies and build
-        run: npm ci && npm run build
+      - name: Build
+        run: npm run build
 
       - name: Upload artifact
         uses: actions/upload-artifact@v4
