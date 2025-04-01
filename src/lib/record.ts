@@ -4,7 +4,6 @@ import { supabase } from "../utils/supabase";
 export async function GetRecords(): Promise<Record[]> {
   const response = await supabase.from("study-record").select("*");
   if (response.error) {
-    console.error(response.error);
     throw new Error(response.error.message);
   }
 
@@ -12,6 +11,5 @@ export async function GetRecords(): Promise<Record[]> {
     return new Record(record.id, record.title, record.time);
   });
 
-  console.log(recordsData);
   return recordsData;
 }
