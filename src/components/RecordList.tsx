@@ -11,19 +11,19 @@ import {
 import { useFetchData } from "../hooks/useFetchData";
 
 export const RecordList = () => {
-  const { records, loading, error } = useFetchData();
+  const { records } = useFetchData();
 
-  if (loading) {
-    return <div>読み込み中...</div>;
-  }
+  // if (loading) {
+  //   return <div>読み込み中...</div>;
+  // }
 
-  if (error) {
-    return <div>エラーが発生しました: {error.message}</div>;
-  }
+  // if (error) {
+  //   return <div>エラーが発生しました: {error.message}</div>;
+  // }
 
-  if (!records || records.length === 0) {
-    return <div>データがありません</div>;
-  }
+  // if (!records || records.length === 0) {
+  //   return <div>データがありません</div>;
+  // }
 
   return (
     <TableContainer>

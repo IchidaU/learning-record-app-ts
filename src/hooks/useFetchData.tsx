@@ -26,9 +26,9 @@ export const useFetchData = () => {
     getAllRecords();
   }, []);
 
-  //   if (error) {
-  //     throw error;
-  //   }
+  if (error) {
+    throw error;
+  }
 
   //   if (loading) {
   //     throw new Promise((resolve) => setTimeout(resolve, 1000));
