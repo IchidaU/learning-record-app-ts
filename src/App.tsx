@@ -1,16 +1,10 @@
-import { lazy, Suspense } from "react";
+import { Suspense } from "react";
 import { ErrorBoundary } from "react-error-boundary";
 import { Heading } from "@chakra-ui/react";
 
-// import { RecordList } from "./components/RecordList";
+import { RecordList } from "./components/RecordList";
 
 function App() {
-  const RecordList = lazy(() =>
-    import("./components/RecordList").then((module) => ({
-      default: module.RecordList,
-    }))
-  );
-
   return (
     <>
       <Heading as="h1" data-testid="title">
