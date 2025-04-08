@@ -1,10 +1,32 @@
-import { Button } from "@chakra-ui/react";
+import { Suspense } from "react";
+import { ErrorBoundary } from "react-error-boundary";
+import { Heading } from "@chakra-ui/react";
+
+import { RecordList } from "./components/RecordList";
 
 function App() {
   return (
     <>
-      <h1 data-testid="title">学習記録アプリ</h1>
-      <Button>PUSH</Button>
+      <Heading as="h1" data-testid="title">
+        学習記録アプリ
+      </Heading>
+      <ErrorBoundary
+        fallback={
+          <Heading as="h2" size="md">
+            データ取得に失敗しました。
+          </Heading>
+        }
+      >
+        <Suspense
+          fallback={
+            <Heading as="h2" size="md">
+              Loading...
+            </Heading>
+          }
+        >
+          <RecordList />
+        </Suspense>
+      </ErrorBoundary>
     </>
   );
 }
