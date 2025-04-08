@@ -14,6 +14,7 @@ import {
 } from "@chakra-ui/react";
 
 import { RecordList } from "./components/RecordList";
+import { InputForm } from "./components/InputForm";
 
 function App() {
   const { isOpen, onOpen, onClose } = useDisclosure();
@@ -37,10 +38,12 @@ function App() {
           <ModalContent>
             <ModalHeader>登録画面</ModalHeader>
             <ModalCloseButton />
-            <ModalBody>test</ModalBody>
+            <ModalBody>
+              <InputForm onclose={onClose} />
+            </ModalBody>
             <ModalFooter>
               <Button onClick={onClose}>キャンセル</Button>
-              <Button colorScheme="blue" mr={3}>
+              <Button onClick={onClickAdd} colorScheme="blue" mr={3}>
                 登録
               </Button>
             </ModalFooter>
