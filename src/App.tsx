@@ -1,10 +1,22 @@
 import { Suspense } from "react";
 import { ErrorBoundary } from "react-error-boundary";
-import { Heading } from "@chakra-ui/react";
+import {
+  Button,
+  Heading,
+  Modal,
+  ModalBody,
+  ModalCloseButton,
+  ModalContent,
+  ModalFooter,
+  ModalHeader,
+  ModalOverlay,
+  useDisclosure,
+} from "@chakra-ui/react";
 
 import { RecordList } from "./components/RecordList";
 
 function App() {
+  const { isOpen, onOpen, onClose } = useDisclosure();
   return (
     <>
       <Heading as="h1" data-testid="title">
@@ -17,6 +29,23 @@ function App() {
           </Heading>
         }
       >
+        <Button onClick={onOpen} colorScheme="blue">
+          登録
+        </Button>
+        <Modal isOpen={isOpen} onClose={onClose}>
+          <ModalOverlay />
+          <ModalContent>
+            <ModalHeader>登録画面</ModalHeader>
+            <ModalCloseButton />
+            <ModalBody>test</ModalBody>
+            <ModalFooter>
+              <Button onClick={onClose}>キャンセル</Button>
+              <Button colorScheme="blue" mr={3}>
+                登録
+              </Button>
+            </ModalFooter>
+          </ModalContent>
+        </Modal>
         <Suspense
           fallback={
             <Heading as="h2" size="md">
