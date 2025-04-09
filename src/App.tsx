@@ -1,17 +1,6 @@
 import { Suspense } from "react";
 import { ErrorBoundary } from "react-error-boundary";
-import {
-  Button,
-  Heading,
-  Modal,
-  ModalBody,
-  ModalCloseButton,
-  ModalContent,
-  ModalFooter,
-  ModalHeader,
-  ModalOverlay,
-  useDisclosure,
-} from "@chakra-ui/react";
+import { Button, Heading, useDisclosure } from "@chakra-ui/react";
 
 import { RecordList } from "./components/RecordList";
 import { InputForm } from "./components/InputForm";
@@ -33,22 +22,7 @@ function App() {
         <Button onClick={onOpen} colorScheme="blue">
           登録
         </Button>
-        <Modal isOpen={isOpen} onClose={onClose}>
-          <ModalOverlay />
-          <ModalContent>
-            <ModalHeader>登録画面</ModalHeader>
-            <ModalCloseButton />
-            <ModalBody>
-              <InputForm onclose={onClose} />
-            </ModalBody>
-            <ModalFooter>
-              <Button onClick={onClose}>キャンセル</Button>
-              <Button onClick={onClickAdd} colorScheme="blue" mr={3}>
-                登録
-              </Button>
-            </ModalFooter>
-          </ModalContent>
-        </Modal>
+        <InputForm isOpen={isOpen} onClose={onClose} />
         <Suspense
           fallback={
             <Heading as="h2" size="md">
