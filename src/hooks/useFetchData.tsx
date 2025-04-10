@@ -18,3 +18,7 @@ export const useFetchData = () => {
 
   return { records };
 };
+
+export const refetchRecords = () => {
+  recordsPromise = null;
+};
