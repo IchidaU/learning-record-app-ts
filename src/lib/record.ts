@@ -13,3 +13,20 @@ export async function GetRecords(): Promise<Record[]> {
 
   return recordsData;
 }
+
+export async function AddRecord(
+  title: string,
+  time: string
+): Promise<Record[]> {
+  await supabase
+    .from("study-record")
+    .insert([
+      {
+        title: title,
+        time: time,
+      },
+    ])
+    .select();
+
+  return GetRecords();
+}
