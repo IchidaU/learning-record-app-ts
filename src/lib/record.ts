@@ -32,6 +32,6 @@ export async function AddRecord(
 }
 
 export async function DeleteRecord(id: string): Promise<Record[]> {
-  await supabase.from("study-record").delete().match({ id: id });
+  await supabase.from("study-record").delete().eq("id", id);
   return GetRecords();
 }
