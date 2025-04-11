@@ -30,3 +30,8 @@ export async function AddRecord(
 
   return GetRecords();
 }
+
+export async function DeleteRecord(id: string): Promise<Record[]> {
+  await supabase.from("study-record").delete().match({ id: id });
+  return GetRecords();
+}
