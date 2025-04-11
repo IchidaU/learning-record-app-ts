@@ -20,7 +20,7 @@ function App() {
         }
       >
         <Button onClick={onOpen} colorScheme="blue">
-          登録
+          新規登録
         </Button>
         <InputForm isOpen={isOpen} onClose={onClose} />
         <Suspense
