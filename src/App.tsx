@@ -1,4 +1,4 @@
-import { Suspense } from "react";
+import { Suspense, useState } from "react";
 import { ErrorBoundary } from "react-error-boundary";
 import { Button, Heading, useDisclosure } from "@chakra-ui/react";
 
@@ -7,6 +7,12 @@ import { InputForm } from "./components/InputForm";
 
 function App() {
   const { isOpen, onOpen, onClose } = useDisclosure();
+  const [refreshKey, setRefreshKey] = useState(0);
+
+  const refreshData = () => {
+    setRefreshKey((prev) => prev + 1);
+  };
+
   return (
     <>
       <Heading as="h1" data-testid="title">
@@ -30,7 +36,7 @@ function App() {
             </Heading>
           }
         >
-          <RecordList />
+          <RecordList key={refreshKey} onDataChange={refreshData} />
         </Suspense>
       </ErrorBoundary>
     </>

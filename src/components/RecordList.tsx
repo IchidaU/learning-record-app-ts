@@ -1,4 +1,5 @@
 import {
+  Button,
   Table,
   TableContainer,
   Tbody,
@@ -8,10 +9,21 @@ import {
   Tr,
 } from "@chakra-ui/react";
 
+import { DeleteRecord } from "../lib/record";
 import { useFetchData } from "../hooks/useFetchData";
 
-export const RecordList = () => {
-  const { records } = useFetchData();
+type RecordListProps = {
+  onDataChange: () => void;
+};
+
+export const RecordList = ({ onDataChange }: RecordListProps) => {
+  const { records, setData } = useFetchData();
+
+  const onClickDelete = async (id: string) => {
+    const updateRecords = await DeleteRecord(id);
+    setData(updateRecords);
+    onDataChange();
+  };
 
   return (
     <TableContainer>
@@ -27,6 +39,9 @@ export const RecordList = () => {
             <Tr key={record.id}>
               <Td>{record.title}</Td>
               <Td>{record.time}</Td>
+              <Td>
+                <Button onClick={() => onClickDelete(record.id)}>削除</Button>
+              </Td>
             </Tr>
           ))}
         </Tbody>

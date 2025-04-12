@@ -17,6 +17,7 @@ export const useFetchData = () => {
   const records = use(recordsPromise);
 
   const updateRecords = (newRecords: Record[]) => {
+    recordsPromise = null;
     recordsPromise = Promise.resolve(newRecords);
   };
 
