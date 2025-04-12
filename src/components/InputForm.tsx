@@ -22,7 +22,6 @@ import { useForm } from "react-hook-form";
 
 import { AddRecord } from "../lib/record";
 import { useFetchData } from "../hooks/useFetchData";
-// import { refetchRecords } from "../hooks/useFetchData";
 
 type InputFormProps = {
   isOpen: boolean;
@@ -55,7 +54,6 @@ export const InputForm = ({ isOpen, onClose }: InputFormProps) => {
       setData(newRecords);
       reset({ title: "", time: 0 });
       onClose();
-      // refetchRecords();
     } catch (error) {
       console.error(error);
     }
