@@ -21,7 +21,8 @@ import {
 import { useForm } from "react-hook-form";
 
 import { AddRecord } from "../lib/record";
-import { refetchRecords } from "../hooks/useFetchData";
+import { useFetchData } from "../hooks/useFetchData";
+// import { refetchRecords } from "../hooks/useFetchData";
 
 type InputFormProps = {
   isOpen: boolean;
@@ -39,6 +40,8 @@ export const InputForm = ({ isOpen, onClose }: InputFormProps) => {
     reset,
     formState: { errors, isSubmitting },
   } = useForm<FormInputs>();
+  const { setData } = useFetchData();
+
   const [title, setTitle] = useState("");
   const [time, setTime] = useState("");
 
@@ -46,12 +49,13 @@ export const InputForm = ({ isOpen, onClose }: InputFormProps) => {
     setTitle(e.target.value);
   const onChangeTime = (valueAsString: string) => setTime(valueAsString);
 
-  const onClickAdd = () => {
+  const onClickAdd = async () => {
     try {
-      AddRecord(title, time);
+      const newRecords = await AddRecord(title, time);
+      setData(newRecords);
       reset({ title: "", time: 0 });
       onClose();
-      refetchRecords();
+      // refetchRecords();
     } catch (error) {
       console.error(error);
     }

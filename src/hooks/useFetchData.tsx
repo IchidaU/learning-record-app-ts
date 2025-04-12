@@ -8,17 +8,17 @@ export const useFetchData = () => {
   if (!recordsPromise) {
     recordsPromise = new Promise<Record[]>((resolve) => {
       (async () => {
-        const data = await GetRecords();
-        resolve(data);
+        const records = await GetRecords();
+        resolve(records);
       })();
     });
   }
 
   const records = use(recordsPromise);
 
-  return { records };
-};
+  const updateRecords = (newRecords: Record[]) => {
+    recordsPromise = Promise.resolve(newRecords);
+  };
 
-export const refetchRecords = () => {
-  recordsPromise = null;
+  return { records, setData: updateRecords };
 };
