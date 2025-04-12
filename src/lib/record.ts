@@ -16,7 +16,7 @@ export async function GetRecords(): Promise<Record[]> {
 
 export async function AddRecord(
   title: string,
-  time: string
+  time: number
 ): Promise<Record[]> {
   await supabase
     .from("study-record")
