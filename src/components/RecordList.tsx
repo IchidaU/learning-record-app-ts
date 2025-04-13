@@ -4,6 +4,7 @@ import {
   TableContainer,
   Tbody,
   Td,
+  Text,
   Th,
   Thead,
   Tr,
@@ -35,15 +36,23 @@ export const RecordList = ({ onDataChange }: RecordListProps) => {
           </Tr>
         </Thead>
         <Tbody>
-          {records.map((record) => (
-            <Tr key={record.id}>
-              <Td>{record.title}</Td>
-              <Td>{record.time}</Td>
-              <Td>
-                <Button onClick={() => onClickDelete(record.id)}>削除</Button>
+          {records.length === 0 ? (
+            <Tr>
+              <Td colSpan={3} textAlign="center">
+                <Text fontSize="xl">記録はありません</Text>
               </Td>
             </Tr>
-          ))}
+          ) : (
+            records.map((record) => (
+              <Tr key={record.id}>
+                <Td>{record.title}</Td>
+                <Td>{record.time}</Td>
+                <Td>
+                  <Button onClick={() => onClickDelete(record.id)}>削除</Button>
+                </Td>
+              </Tr>
+            ))
+          )}
         </Tbody>
       </Table>
     </TableContainer>
