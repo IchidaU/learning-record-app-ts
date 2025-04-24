@@ -1,4 +1,4 @@
-import { ChangeEvent, useState } from "react";
+import { ChangeEvent } from "react";
 import {
   Modal,
   ModalBody,
@@ -21,7 +21,7 @@ import {
 import { useForm } from "react-hook-form";
 
 import { AddRecord } from "../lib/record";
-import { refetchRecords } from "../hooks/useFetchData";
+import { useFetchData } from "../hooks/useFetchData";
 
 type InputFormProps = {
   isOpen: boolean;
@@ -37,21 +37,32 @@ export const InputForm = ({ isOpen, onClose }: InputFormProps) => {
     register,
     handleSubmit,
     reset,
+    watch,
+    setValue,
     formState: { errors, isSubmitting },
-  } = useForm<FormInputs>();
-  const [title, setTitle] = useState("");
-  const [time, setTime] = useState("");
+  } = useForm<FormInputs>({
+    defaultValues: {
+      title: "",
+      time: 0,
+    },
+  });
+  const { setData } = useFetchData();
+
+  const title = watch("title");
+  const time = watch("time");
 
   const onChangeTitle = (e: ChangeEvent<HTMLInputElement>) =>
-    setTitle(e.target.value);
-  const onChangeTime = (valueAsString: string) => setTime(valueAsString);
+    setValue("title", e.target.value);
+  const onChangeTime = (_valueAsString: string, valueAsNumber: number) =>
+    setValue("time", valueAsNumber);
 
-  const onClickAdd = () => {
+  const onClickAdd = async () => {
     try {
-      AddRecord(title, time);
+      const formValues = watch();
+      const newRecords = await AddRecord(formValues.title, formValues.time);
+      setData(newRecords);
       reset({ title: "", time: 0 });
       onClose();
-      refetchRecords();
     } catch (error) {
       console.error(error);
     }
@@ -61,7 +72,7 @@ export const InputForm = ({ isOpen, onClose }: InputFormProps) => {
     <Modal isOpen={isOpen} onClose={onClose}>
       <ModalOverlay />
       <ModalContent>
-        <ModalHeader>登録画面</ModalHeader>
+        <ModalHeader>新規登録</ModalHeader>
         <ModalCloseButton />
         <ModalBody>
           <form id="inputForm" onSubmit={handleSubmit(onClickAdd)}>

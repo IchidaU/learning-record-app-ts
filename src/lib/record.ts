@@ -16,7 +16,7 @@ export async function GetRecords(): Promise<Record[]> {
 
 export async function AddRecord(
   title: string,
-  time: string
+  time: number
 ): Promise<Record[]> {
   await supabase
     .from("study-record")
@@ -28,5 +28,10 @@ export async function AddRecord(
     ])
     .select();
 
+  return GetRecords();
+}
+
+export async function DeleteRecord(id: string): Promise<Record[]> {
+  await supabase.from("study-record").delete().eq("id", id);
   return GetRecords();
 }
