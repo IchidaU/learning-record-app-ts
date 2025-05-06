@@ -1,28 +1,64 @@
+import "@testing-library/jest-dom";
 import { render, screen } from "@testing-library/react";
-import { ChakraProvider } from "@chakra-ui/react";
+import { act } from "react";
+import * as recordModule from "../lib/record";
+
 import App from "../App";
+import { ChakraProvider } from "@chakra-ui/react";
 
-import { Record } from "../domain/record";
-
-let mockRecords: Record[] = [];
+const mockLogs = [
+  {
+    id: "1",
+    title: "test",
+    time: 1,
+  },
+];
 
 jest.mock("../lib/record", () => ({
-  GetRecords: jest.fn(() => Promise.resolve(mockRecords)),
-  AddRecord: jest.fn(() => Promise.resolve(mockRecords)),
-  DeleteRecord: jest.fn(() => Promise.resolve(mockRecords)),
+  GetRecords: jest.fn(),
 }));
 
-beforeEach(() => {
-  mockRecords = [new Record("1", "test", 1), new Record("2", "test2", 2)];
-});
-
 describe("App", () => {
+  beforeEach(() => {
+    jest.clearAllMocks();
+  });
   it("ローディング画面表示", async () => {
-    render(
-      <ChakraProvider>
-        <App />
-      </ChakraProvider>
+    const getRecordsPromise = new Promise((resolve) =>
+      setTimeout(() => resolve(mockLogs), 1000)
     );
-    expect(screen.getByText("Loading...")).toBeInTheDocument();
+    (recordModule.GetRecords as jest.Mock).mockImplementation(
+      () => getRecordsPromise
+    );
+
+    await act(async () => {
+      render(
+        <ChakraProvider>
+          <App />
+        </ChakraProvider>
+      );
+
+      await new Promise((resolve) => setTimeout(resolve, 0));
+    });
+
+    expect(screen.getByTestId("loading")).toBeInTheDocument();
+  });
+
+  it("データ読み込み後に一覧が表示", async () => {
+    const getRecordsPromise = Promise.resolve(mockLogs);
+    (recordModule.GetRecords as jest.Mock).mockImplementation(
+      () => getRecordsPromise
+    );
+
+    await act(async () => {
+      render(
+        <ChakraProvider>
+          <App />
+        </ChakraProvider>
+      );
+
+      await new Promise((resolve) => setTimeout(resolve, 0));
+    });
+
+    expect(screen.getByTestId("table")).toBeInTheDocument();
   });
 });
