@@ -1,64 +1,35 @@
 import "@testing-library/jest-dom";
-import { render, screen } from "@testing-library/react";
-import { act } from "react";
-import * as recordModule from "../lib/record";
+import { render, screen, waitFor } from "@testing-library/react";
 
 import App from "../App";
-import { ChakraProvider } from "@chakra-ui/react";
+import { Record } from "../domain/record";
 
-const mockLogs = [
-  {
-    id: "1",
-    title: "test",
-    time: 1,
-  },
-];
+const mockGetRecords = jest
+  .fn()
+  .mockResolvedValue([
+    new Record("1", "test", 1),
+    new Record("2", "test2", 2),
+    new Record("3", "test3", 3),
+    new Record("4", "test4", 4),
+  ]);
 
-jest.mock("../lib/record", () => ({
-  GetRecords: jest.fn(),
-}));
+jest.mock("../lib/record", () => {
+  return {
+    GetRecords: () => mockGetRecords(),
+  };
+});
 
 describe("App", () => {
-  beforeEach(() => {
-    jest.clearAllMocks();
-  });
   it("ローディング画面表示", async () => {
-    const getRecordsPromise = new Promise((resolve) =>
-      setTimeout(() => resolve(mockLogs), 1000)
-    );
-    (recordModule.GetRecords as jest.Mock).mockImplementation(
-      () => getRecordsPromise
-    );
-
-    await act(async () => {
-      render(
-        <ChakraProvider>
-          <App />
-        </ChakraProvider>
-      );
-
-      await new Promise((resolve) => setTimeout(resolve, 0));
-    });
-
+    render(<App />);
     expect(screen.getByTestId("loading")).toBeInTheDocument();
   });
 
-  it("データ読み込み後に一覧が表示", async () => {
-    const getRecordsPromise = Promise.resolve(mockLogs);
-    (recordModule.GetRecords as jest.Mock).mockImplementation(
-      () => getRecordsPromise
-    );
+  it("記録が4件表示されること", async () => {
+    render(<App />);
+    await waitFor(() => screen.getByTestId("table"));
+    const rows = screen.getByTestId("table").querySelectorAll("tr");
 
-    await act(async () => {
-      render(
-        <ChakraProvider>
-          <App />
-        </ChakraProvider>
-      );
-
-      await new Promise((resolve) => setTimeout(resolve, 0));
-    });
-
-    expect(screen.getByTestId("table")).toBeInTheDocument();
+    expect(rows.length - 1).toBe(4);
   });
 });
