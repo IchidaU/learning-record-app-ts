@@ -27,7 +27,7 @@ export const RecordList = ({ onDataChange }: RecordListProps) => {
   };
 
   return (
-    <TableContainer data-testid="table">
+    <TableContainer>
       <Table variant="simple" data-testid="table">
         <Thead>
           <Tr>
