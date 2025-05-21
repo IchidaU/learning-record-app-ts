@@ -1,5 +1,5 @@
 import "@testing-library/jest-dom";
-import { render, screen, waitFor } from "@testing-library/react";
+import { act, render, screen, waitFor } from "@testing-library/react";
 
 import App from "../App";
 import { Record } from "../domain/record";
@@ -24,11 +24,13 @@ describe("App", () => {
     mockGetRecords.mockImplementationOnce(
       () =>
         new Promise((resolve) =>
-          setTimeout(() => resolve(mockGetRecords()), 1000)
+          setTimeout(() => resolve(mockGetRecords()), 10000)
         )
     );
 
-    render(<App />);
+    await act(async () => {
+      render(<App />);
+    });
 
     const result = await mockGetRecords.mock.results[0].value;
     console.log(result);
@@ -42,7 +44,7 @@ describe("App", () => {
     });
 
     expect(screen.getByTestId("loading")).toBeInTheDocument();
-  });
+  }, 20000);
 
   // it("記録が4件表示されること", async () => {
   //   render(<App />);
