@@ -1,22 +1,35 @@
-import { render, screen, act } from "@testing-library/react";
-import { ChakraProvider } from "@chakra-ui/react";
+import "@testing-library/jest-dom";
+import { act, render, screen, waitFor } from "@testing-library/react";
+
 import App from "../App";
+import { Record } from "../domain/record";
 
-jest.mock("../hooks/useFetchData", () => ({
-  useFetchData: () => ({
-    records: [],
-    setData: jest.fn(),
-  }),
-}));
+const mockGetRecords = jest
+  .fn()
+  .mockResolvedValue([
+    new Record("1", "test1", 1),
+    new Record("2", "test2", 2),
+    new Record("3", "test3", 3),
+    new Record("4", "test4", 4),
+  ]);
 
-describe("title", () => {
-  it("should render title", async () => {
-    render(
-      <ChakraProvider>
-        <App />
-      </ChakraProvider>
-    );
-    await act(() => screen.getByTestId("title"));
-    expect(screen.getByTestId("title")).toHaveTextContent("学習記録アプリ");
+jest.mock("../lib/record", () => {
+  return {
+    GetRecords: () => mockGetRecords(),
+  };
+});
+
+describe("App", () => {
+  it("記録が4件表示されること", async () => {
+    await act(async () => {
+      render(<App />);
+    });
+
+    expect(mockGetRecords).toHaveBeenCalled();
+    await waitFor(() => expect(mockGetRecords).toHaveBeenCalledTimes(1));
+
+    const table = await screen.findByTestId("table");
+    const rows = table.querySelectorAll("tr");
+    expect(rows.length - 1).toBe(4);
   });
 });
