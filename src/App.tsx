@@ -31,7 +31,7 @@ function App() {
         <InputForm isOpen={isOpen} onClose={onClose} />
         <Suspense
           fallback={
-            <Heading as="h2" size="md">
+            <Heading as="h2" size="md" data-testid="loading">
               Loading...
             </Heading>
           }
