@@ -32,4 +32,14 @@ describe("App", () => {
     const rows = table.querySelectorAll("tr");
     expect(rows.length - 1).toBe(4);
   });
+
+  it("新規登録ボタンがある", async () => {
+    await act(async () => {
+      render(<App />);
+    });
+
+    expect(
+      screen.getByRole("button", { name: "新規登録" })
+    ).toBeInTheDocument();
+  });
 });
