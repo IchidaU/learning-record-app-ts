@@ -20,43 +20,16 @@ jest.mock("../lib/record", () => {
 });
 
 describe("App", () => {
-  it("ローディング画面表示", async () => {
-    mockGetRecords.mockImplementationOnce(
-      () =>
-        new Promise((resolve) =>
-          setTimeout(() => resolve(mockGetRecords()), 10000)
-        )
-    );
-
+  it("記録が4件表示されること", async () => {
     await act(async () => {
       render(<App />);
     });
 
-    const result = await mockGetRecords.mock.results[0].value;
-    console.log(result);
+    expect(mockGetRecords).toHaveBeenCalled();
+    await waitFor(() => expect(mockGetRecords).toHaveBeenCalledTimes(1));
 
-    console.log("初期レンダリング");
-    screen.debug();
-
-    await waitFor(() => {
-      console.log("データロード後");
-      screen.debug();
-    });
-
-    expect(screen.getByTestId("loading")).toBeInTheDocument();
-  }, 20000);
-
-  // it("記録が4件表示されること", async () => {
-  //   render(<App />);
-
-  //   expect(mockGetRecords).toHaveBeenCalled();
-  //   await waitFor(() => expect(mockGetRecords).toHaveBeenCalledTimes(1));
-
-  //   await waitFor(() => {
-  //     screen.getByTestId("table");
-  //     const records = screen.getByTestId("table").querySelectorAll("tr");
-
-  //     expect(records.length - 1).toBe(4);
-  //   });
-  // });
+    const table = await screen.findByTestId("table");
+    const rows = table.querySelectorAll("tr");
+    expect(rows.length - 1).toBe(4);
+  });
 });
