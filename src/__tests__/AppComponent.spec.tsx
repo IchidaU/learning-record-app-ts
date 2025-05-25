@@ -87,6 +87,20 @@ describe("App", () => {
 
     expect(mockAddRecord).toHaveBeenCalledWith("test", 1);
     expect(mockGetRecords).toHaveBeenCalledTimes(1);
-    screen.debug();
+  });
+
+  it("モーダルが新規登録というタイトルになっている", async () => {
+    const user = userEvent.setup();
+
+    await act(async () => {
+      render(<App />);
+    });
+
+    const button = screen.getByRole("button", { name: "新規登録" });
+    await user.click(button);
+
+    expect(
+      screen.getByRole("dialog", { name: "新規登録" })
+    ).toBeInTheDocument();
   });
 });
