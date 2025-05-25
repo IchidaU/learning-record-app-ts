@@ -44,7 +44,7 @@ export const RecordList = ({ onDataChange }: RecordListProps) => {
             </Tr>
           ) : (
             records.map((record) => (
-              <Tr key={record.id}>
+              <Tr key={record.id} data-testid="record">
                 <Td>{record.title}</Td>
                 <Td>{record.time}</Td>
                 <Td>
