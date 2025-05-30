@@ -153,4 +153,6 @@ describe("App", () => {
       expect(errorMessage).toBeInTheDocument();
     });
   });
+
+  it("削除ができること", async () => {});
 });
