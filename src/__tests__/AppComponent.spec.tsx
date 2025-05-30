@@ -69,7 +69,7 @@ describe("App", () => {
     await user.click(button);
 
     const titleInput = screen.getByLabelText("学習内容");
-    await user.type(titleInput, "test");
+    await user.type(titleInput, "test5");
 
     const timeInput = screen.getByLabelText("学習時間");
     await user.type(timeInput, "1");
@@ -83,9 +83,9 @@ describe("App", () => {
     });
 
     const records = screen.getAllByTestId("record");
-    expect(records[4]).toHaveTextContent("test1削除");
+    expect(records[4]).toHaveTextContent("test51削除");
 
-    expect(mockAddRecord).toHaveBeenCalledWith("test", 1);
+    expect(mockAddRecord).toHaveBeenCalledWith("test5", 1);
     expect(mockGetRecords).toHaveBeenCalledTimes(1);
   });
 
@@ -102,5 +102,55 @@ describe("App", () => {
     expect(
       screen.getByRole("dialog", { name: "新規登録" })
     ).toBeInTheDocument();
+  });
+
+  it("学習内容がないときに登録するとエラーがでる", async () => {
+    const user = userEvent.setup();
+
+    await act(async () => {
+      render(<App />);
+    });
+
+    const button = screen.getByRole("button", { name: "新規登録" });
+    await userEvent.click(button);
+
+    const titleInput = screen.getByLabelText("学習内容");
+    await user.clear(titleInput);
+
+    const timeInput = screen.getByLabelText("学習時間");
+    await user.type(timeInput, "1");
+
+    const addBtn = screen.getByRole("button", { name: "登録" });
+    await user.click(addBtn);
+
+    await waitFor(() => {
+      const errorMessage = screen.getByText("内容の入力は必須です");
+      expect(errorMessage).toBeInTheDocument();
+    });
+  });
+
+  it("学習時間がないときに登録するとエラーがでる", async () => {
+    const user = userEvent.setup();
+
+    await act(async () => {
+      render(<App />);
+    });
+
+    const button = screen.getByRole("button", { name: "新規登録" });
+    await userEvent.click(button);
+
+    const titleInput = screen.getByLabelText("学習内容");
+    await user.type(titleInput, "test6");
+
+    const timeInput = screen.getByLabelText("学習時間");
+    await user.clear(timeInput);
+
+    const addBtn = screen.getByRole("button", { name: "登録" });
+    await user.click(addBtn);
+
+    await waitFor(() => {
+      const errorMessage = screen.getByText("時間の入力は必須です");
+      expect(errorMessage).toBeInTheDocument();
+    });
   });
 });
