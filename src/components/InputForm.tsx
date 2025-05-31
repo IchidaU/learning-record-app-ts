@@ -53,8 +53,13 @@ export const InputForm = ({ isOpen, onClose }: InputFormProps) => {
 
   const onChangeTitle = (e: ChangeEvent<HTMLInputElement>) =>
     setValue("title", e.target.value);
-  const onChangeTime = (_valueAsString: string, valueAsNumber: number) =>
-    setValue("time", valueAsNumber);
+  const onChangeTime = (_valueAsString: string, valueAsNumber: number) => {
+    if (isNaN(valueAsNumber)) {
+      setValue("time", 0);
+    } else {
+      setValue("time", valueAsNumber);
+    }
+  };
 
   const onClickAdd = async () => {
     try {
@@ -102,8 +107,11 @@ export const InputForm = ({ isOpen, onClose }: InputFormProps) => {
                   {...register("time", {
                     required: "時間の入力は必須です",
                     validate: (value) => {
+                      if (value === 0 || isNaN(value)) {
+                        return "時間の入力は必須です";
+                      }
                       if (value < 0) {
-                        return "時間は0以上である必要があります";
+                        return "時間は1以上である必要があります";
                       }
                     },
                   })}
