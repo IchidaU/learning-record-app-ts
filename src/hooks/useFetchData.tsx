@@ -4,6 +4,10 @@ import { Record } from "../domain/record";
 
 let recordsPromise: Promise<Record[]> | null = null;
 
+export const resetRecordsPromise = () => {
+  recordsPromise = null;
+};
+
 export const useFetchData = () => {
   if (!recordsPromise) {
     recordsPromise = new Promise<Record[]>((resolve) => {

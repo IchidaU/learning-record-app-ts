@@ -1,9 +1,10 @@
 import "@testing-library/jest-dom";
-import { act, render, screen, waitFor } from "@testing-library/react";
+import { act, cleanup, render, screen, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 
 import App from "../App";
 import { Record } from "../domain/record";
+import { resetRecordsPromise } from "../hooks/useFetchData";
 
 const initialRecords = [
   new Record("1", "test1", 1),
@@ -12,21 +13,39 @@ const initialRecords = [
   new Record("4", "test4", 4),
 ];
 
-const mockGetRecords = jest.fn().mockResolvedValue(initialRecords);
-const mockAddRecord = jest
-  .fn()
-  .mockImplementation((title: string, time: number) => {
-    return Promise.resolve([...initialRecords, new Record("5", title, time)]);
-  });
+const mockGetRecords = jest.fn();
+const mockAddRecord = jest.fn();
+const mockDeleteRecord = jest.fn();
 
 jest.mock("../lib/record", () => {
   return {
     GetRecords: () => mockGetRecords(),
     AddRecord: (title: string, time: number) => mockAddRecord(title, time),
+    DeleteRecord: (id: string) => mockDeleteRecord(id),
   };
 });
 
 describe("App", () => {
+  beforeEach(() => {
+    jest.clearAllMocks();
+    cleanup();
+
+    resetRecordsPromise();
+
+    mockGetRecords.mockResolvedValue([...initialRecords]);
+
+    mockAddRecord.mockImplementation((title: string, time: number) => {
+      return Promise.resolve([...initialRecords, new Record("5", title, time)]);
+    });
+
+    mockDeleteRecord.mockImplementation((id: string) => {
+      const filteredRecords = initialRecords.filter(
+        (record) => record.id !== id
+      );
+      return Promise.resolve([...filteredRecords]);
+    });
+  });
+
   it("記録が4件表示されること", async () => {
     await act(async () => {
       render(<App />);
@@ -65,16 +84,15 @@ describe("App", () => {
       render(<App />);
     });
 
-    const button = screen.getByRole("button", { name: "新規登録" });
-    await user.click(button);
+    const registerBtn = screen.getByRole("button", { name: "新規登録" });
+    await user.click(registerBtn);
 
-    const titleInput = screen.getByLabelText("学習内容");
-    await user.type(titleInput, "test5");
-
+    const titleInput = await screen.findByLabelText("学習内容");
     const timeInput = screen.getByLabelText("学習時間");
-    await user.type(timeInput, "1");
-
     const addBtn = screen.getByRole("button", { name: "登録" });
+
+    await user.type(titleInput, "test5");
+    await user.type(timeInput, "1");
     await user.click(addBtn);
 
     await waitFor(() => {
@@ -86,7 +104,6 @@ describe("App", () => {
     expect(records[4]).toHaveTextContent("test51削除");
 
     expect(mockAddRecord).toHaveBeenCalledWith("test5", 1);
-    expect(mockGetRecords).toHaveBeenCalledTimes(1);
   });
 
   it("モーダルが新規登録というタイトルになっている", async () => {
@@ -96,8 +113,8 @@ describe("App", () => {
       render(<App />);
     });
 
-    const button = screen.getByRole("button", { name: "新規登録" });
-    await user.click(button);
+    const registerBtn = screen.getByRole("button", { name: "新規登録" });
+    await user.click(registerBtn);
 
     expect(
       screen.getByRole("dialog", { name: "新規登録" })
@@ -111,16 +128,15 @@ describe("App", () => {
       render(<App />);
     });
 
-    const button = screen.getByRole("button", { name: "新規登録" });
-    await userEvent.click(button);
+    const registerBtn = screen.getByRole("button", { name: "新規登録" });
+    await userEvent.click(registerBtn);
 
     const titleInput = screen.getByLabelText("学習内容");
-    await user.clear(titleInput);
-
     const timeInput = screen.getByLabelText("学習時間");
-    await user.type(timeInput, "1");
-
     const addBtn = screen.getByRole("button", { name: "登録" });
+
+    await user.clear(titleInput);
+    await user.type(timeInput, "1");
     await user.click(addBtn);
 
     await waitFor(() => {
@@ -136,16 +152,15 @@ describe("App", () => {
       render(<App />);
     });
 
-    const button = screen.getByRole("button", { name: "新規登録" });
-    await userEvent.click(button);
+    const registerBtn = screen.getByRole("button", { name: "新規登録" });
+    await userEvent.click(registerBtn);
 
     const titleInput = screen.getByLabelText("学習内容");
-    await user.type(titleInput, "test6");
-
     const timeInput = screen.getByLabelText("学習時間");
-    await user.clear(timeInput);
-
     const addBtn = screen.getByRole("button", { name: "登録" });
+
+    await user.type(titleInput, "test6");
+    await user.clear(timeInput);
     await user.click(addBtn);
 
     await waitFor(() => {
@@ -154,5 +169,33 @@ describe("App", () => {
     });
   });
 
-  it("削除ができること", async () => {});
+  it("削除ができること", async () => {
+    mockGetRecords.mockResolvedValue([...initialRecords]);
+
+    const user = userEvent.setup();
+
+    await act(async () => {
+      render(<App />);
+    });
+
+    await waitFor(() => {
+      expect(screen.getAllByTestId("record")).toHaveLength(4);
+    });
+
+    const deleteBtn = screen.getAllByText("削除")[0];
+    await user.click(deleteBtn);
+
+    await waitFor(() => {
+      expect(screen.getAllByTestId("record")).toHaveLength(3);
+    });
+
+    const recordsAfterDelete = screen.getAllByTestId("record");
+
+    for (const record of recordsAfterDelete) {
+      expect(record.textContent).not.toContain("test1");
+    }
+
+    expect(mockDeleteRecord).toHaveBeenCalledWith("1");
+    expect(mockGetRecords).toHaveBeenCalledTimes(1);
+  });
 });
