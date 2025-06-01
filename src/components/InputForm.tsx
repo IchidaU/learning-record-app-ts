@@ -1,4 +1,4 @@
-import { ChangeEvent } from "react";
+import { ChangeEvent, useEffect } from "react";
 import {
   Modal,
   ModalBody,
@@ -20,19 +20,21 @@ import {
 } from "@chakra-ui/react";
 import { useForm } from "react-hook-form";
 
-import { AddRecord } from "../lib/record";
+import { AddRecord, UpdateRecord } from "../lib/record";
 import { useFetchData } from "../hooks/useFetchData";
+import { Record } from "../domain/record";
 
 type InputFormProps = {
   isOpen: boolean;
   onClose: () => void;
+  editRecord?: Record | null;
 };
 type FormInputs = {
   title: string;
   time: number;
 };
 
-export const InputForm = ({ isOpen, onClose }: InputFormProps) => {
+export const InputForm = ({ isOpen, onClose, editRecord }: InputFormProps) => {
   const {
     register,
     handleSubmit,
@@ -61,10 +63,27 @@ export const InputForm = ({ isOpen, onClose }: InputFormProps) => {
     }
   };
 
+  useEffect(() => {
+    if (editRecord) {
+      setValue("title", editRecord.title);
+      setValue("time", editRecord.time);
+    }
+  }, [editRecord, setValue]);
+
   const onClickAdd = async () => {
     try {
       const formValues = watch();
-      const newRecords = await AddRecord(formValues.title, formValues.time);
+      let newRecords;
+
+      if (editRecord) {
+        newRecords = await UpdateRecord(
+          editRecord.id,
+          formValues.title,
+          formValues.time
+        );
+      } else {
+        newRecords = await AddRecord(formValues.title, formValues.time);
+      }
       setData(newRecords);
       reset({ title: "", time: 0 });
       onClose();
@@ -73,11 +92,13 @@ export const InputForm = ({ isOpen, onClose }: InputFormProps) => {
     }
   };
 
+  const modalTitle = editRecord ? "記録編集" : "新規登録";
+
   return (
     <Modal isOpen={isOpen} onClose={onClose}>
       <ModalOverlay />
       <ModalContent>
-        <ModalHeader>新規登録</ModalHeader>
+        <ModalHeader>{modalTitle}</ModalHeader>
         <ModalCloseButton />
         <ModalBody>
           <form id="inputForm" onSubmit={handleSubmit(onClickAdd)}>

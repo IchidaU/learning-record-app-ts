@@ -1,5 +1,5 @@
 import {
-  Button,
+  IconButton,
   Table,
   TableContainer,
   Tbody,
@@ -9,21 +9,28 @@ import {
   Thead,
   Tr,
 } from "@chakra-ui/react";
+import { MdDelete, MdEdit } from "react-icons/md";
 
 import { DeleteRecord } from "../lib/record";
 import { useFetchData } from "../hooks/useFetchData";
+import { Record } from "../domain/record";
 
 type RecordListProps = {
   onDataChange: () => void;
+  onEdit: (record: Record) => void;
 };
 
-export const RecordList = ({ onDataChange }: RecordListProps) => {
+export const RecordList = ({ onDataChange, onEdit }: RecordListProps) => {
   const { records, setData } = useFetchData();
 
   const onClickDelete = async (id: string) => {
     const updateRecords = await DeleteRecord(id);
     setData(updateRecords);
     onDataChange();
+  };
+
+  const onClickEdit = (record: Record) => {
+    onEdit(record);
   };
 
   return (
@@ -48,7 +55,18 @@ export const RecordList = ({ onDataChange }: RecordListProps) => {
                 <Td>{record.title}</Td>
                 <Td>{record.time}</Td>
                 <Td>
-                  <Button onClick={() => onClickDelete(record.id)}>削除</Button>
+                  <IconButton
+                    aria-label="edit"
+                    icon={<MdEdit />}
+                    onClick={() => onClickEdit(record)}
+                  />
+                </Td>
+                <Td>
+                  <IconButton
+                    aria-label="delete"
+                    icon={<MdDelete />}
+                    onClick={() => onClickDelete(record.id)}
+                  />
                 </Td>
               </Tr>
             ))
