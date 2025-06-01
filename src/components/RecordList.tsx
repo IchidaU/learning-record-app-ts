@@ -1,5 +1,5 @@
 import {
-  Button,
+  IconButton,
   Table,
   TableContainer,
   Tbody,
@@ -9,6 +9,7 @@ import {
   Thead,
   Tr,
 } from "@chakra-ui/react";
+import { MdDelete, MdEdit } from "react-icons/md";
 
 import { DeleteRecord } from "../lib/record";
 import { useFetchData } from "../hooks/useFetchData";
@@ -48,7 +49,14 @@ export const RecordList = ({ onDataChange }: RecordListProps) => {
                 <Td>{record.title}</Td>
                 <Td>{record.time}</Td>
                 <Td>
-                  <Button onClick={() => onClickDelete(record.id)}>削除</Button>
+                  <IconButton aria-label="edit" icon={<MdEdit />} />
+                </Td>
+                <Td>
+                  <IconButton
+                    aria-label="delete"
+                    icon={<MdDelete />}
+                    onClick={() => onClickDelete(record.id)}
+                  />
                 </Td>
               </Tr>
             ))
