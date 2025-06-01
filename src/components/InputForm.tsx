@@ -92,11 +92,13 @@ export const InputForm = ({ isOpen, onClose, editRecord }: InputFormProps) => {
     }
   };
 
+  const modalTitle = editRecord ? "記録編集" : "新規登録";
+
   return (
     <Modal isOpen={isOpen} onClose={onClose}>
       <ModalOverlay />
       <ModalContent>
-        <ModalHeader>新規登録</ModalHeader>
+        <ModalHeader>{modalTitle}</ModalHeader>
         <ModalCloseButton />
         <ModalBody>
           <form id="inputForm" onSubmit={handleSubmit(onClickAdd)}>
