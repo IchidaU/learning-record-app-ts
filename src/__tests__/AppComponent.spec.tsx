@@ -101,7 +101,7 @@ describe("App", () => {
     });
 
     const records = screen.getAllByTestId("record");
-    expect(records[4]).toHaveTextContent("test51削除");
+    expect(records[4]).toHaveTextContent("test51");
 
     expect(mockAddRecord).toHaveBeenCalledWith("test5", 1);
   });
@@ -182,8 +182,8 @@ describe("App", () => {
       expect(screen.getAllByTestId("record")).toHaveLength(4);
     });
 
-    const deleteBtn = screen.getAllByText("削除")[0];
-    await user.click(deleteBtn);
+    const deleteBtn = screen.getAllByRole("button", { name: "delete" });
+    await user.click(deleteBtn[0]);
 
     await waitFor(() => {
       expect(screen.getAllByTestId("record")).toHaveLength(3);
