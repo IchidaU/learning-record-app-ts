@@ -16,12 +16,15 @@ const initialRecords = [
 const mockGetRecords = jest.fn();
 const mockAddRecord = jest.fn();
 const mockDeleteRecord = jest.fn();
+const mockUpdateRecord = jest.fn();
 
 jest.mock("../lib/record", () => {
   return {
     GetRecords: () => mockGetRecords(),
     AddRecord: (title: string, time: number) => mockAddRecord(title, time),
     DeleteRecord: (id: string) => mockDeleteRecord(id),
+    UpdateRecord: (id: string, title: string, time: number) =>
+      mockUpdateRecord(id, title, time),
   };
 });
 
@@ -44,6 +47,15 @@ describe("App", () => {
       );
       return Promise.resolve([...filteredRecords]);
     });
+
+    mockUpdateRecord.mockImplementation(
+      (id: string, title: string, time: number) => {
+        const updatedRecords = initialRecords.map((record) =>
+          record.id === id ? new Record(record.id, title, time) : record
+        );
+        return Promise.resolve([...updatedRecords]);
+      }
+    );
   });
 
   it("記録が4件表示されること", async () => {
@@ -159,7 +171,7 @@ describe("App", () => {
     const timeInput = screen.getByLabelText("学習時間");
     const addBtn = screen.getByRole("button", { name: "登録" });
 
-    await user.type(titleInput, "test6");
+    await user.type(titleInput, "test7");
     await user.clear(timeInput);
     await user.click(addBtn);
 
@@ -197,5 +209,47 @@ describe("App", () => {
 
     expect(mockDeleteRecord).toHaveBeenCalledWith("1");
     expect(mockGetRecords).toHaveBeenCalledTimes(1);
+  });
+
+  it("モーダルのタイトルが記録編集である", async () => {
+    const user = userEvent.setup();
+
+    await act(async () => {
+      render(<App />);
+    });
+
+    const editBtn = screen.getAllByRole("button", { name: "edit" });
+    await user.click(editBtn[0]);
+
+    expect(
+      screen.getByRole("dialog", { name: "記録編集" })
+    ).toBeInTheDocument();
+  });
+
+  it("編集して登録すると更新される", async () => {
+    const user = userEvent.setup();
+
+    await act(async () => {
+      render(<App />);
+    });
+
+    const editBtn = screen.getAllByRole("button", { name: "edit" });
+    await user.click(editBtn[0]);
+
+    const titleEdit = screen.getByLabelText("学習内容");
+    const timeEdit = screen.getByLabelText("学習時間");
+    const submitBtn = screen.getByRole("button", { name: "登録" });
+
+    await user.clear(titleEdit);
+    await user.type(titleEdit, "test10");
+    await user.clear(timeEdit);
+    await user.type(timeEdit, "10");
+
+    await user.click(submitBtn);
+
+    await waitFor(() => {
+      const records = screen.getAllByTestId("record");
+      expect(records[0]).toHaveTextContent("test1010");
+    });
   });
 });
